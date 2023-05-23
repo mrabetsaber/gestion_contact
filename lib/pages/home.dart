@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 
 import '../sql/sql_helper.dart';
+import '../widgets/drawer_widget.dart';
 import 'Contact.dart';
 
 class Home extends StatefulWidget {
@@ -32,9 +33,11 @@ class _HomeState extends State<Home> {
     super.initState();
     _refreshJournals(); // Loading the diary when the app starts
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        drawer: MyDrawer(),
         appBar: AppBar(
           title: Text("Flutter ListView"),
         ),
@@ -43,13 +46,14 @@ class _HomeState extends State<Home> {
             return Card(
               child: ListTile(
                 leading: CircleAvatar(
+                  
                   backgroundImage: AssetImage(_journals[index]["nom"]),
                 ),
-                title: Text("item"),
-                subtitle: Text("sub item"),
+                title: Text(_journals[index]["nom"]),
+                subtitle: Text(_journals[index]["nom"]),
                 onTap: () {
-                  // FlutterPhoneDirectCaller.callNumber(images[index]);
-                  showAlertDialog(context, _journals[index]["nom"]);
+                  FlutterPhoneDirectCaller.callNumber(_journals[index]["tel"].toString());
+                  // showAlertDialog(context, _journals[index]["nom"]);
                   // Fluttertoast.showToast(
                   //     msg: images[index],
                   //     toastLength: Toast.LENGTH_SHORT,
@@ -64,23 +68,22 @@ class _HomeState extends State<Home> {
           scrollDirection: Axis.vertical,
         ));
   }
-  
-static Future<List<Contact>> _contactList() async {
-  List<Map<String, dynamic>> contactMaps = await SQLHelper.getContcts();
-  List<Contact> contacts = [];
 
-  for (var contactMap in contactMaps) {
-    String nom = contactMap['nom'];
-    String prenom = contactMap['prenom'];
-    String tel = contactMap['tel'];
+  static Future<List<Contact>> _contactList() async {
+    List<Map<String, dynamic>> contactMaps = await SQLHelper.getContcts();
+    List<Contact> contacts = [];
 
-    Contact contact = Contact(nom, prenom, tel);
-    contacts.add(contact);
+    for (var contactMap in contactMaps) {
+      String nom = contactMap['nom'];
+      String prenom = contactMap['prenom'];
+      String tel = contactMap['tel'];
+
+      Contact contact = Contact(nom, prenom, tel);
+      contacts.add(contact);
+    }
+
+    return contacts;
   }
-
-  return contacts;
-}
-
 }
 
 showAlertDialog(BuildContext context, String message) {
